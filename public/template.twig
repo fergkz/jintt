@@ -1,0 +1,369 @@
+
+<div class="wrapper">
+    <div class="header">
+        <h2>
+            {{RenderSprint.Title}} &nbsp;&nbsp; 
+            <small>{{RenderSprintDateStart}} a {{RenderSprintDateEnd}}</small>
+        </h2>
+    </div>
+    <div class="gantt" style="--grid-columns: {{TimelineLen}}">
+        <div class="header">
+            <div class="row htimeline">
+                <div class="col"></div>
+                {% for tl in RenderSprint.Timeline %}
+                    <div class="col {{tl.Locked ? "locked" : ""}} {{tl.Today ? "current" : ""}}">{{tl.DisplayShortName}}</div>
+                {% endfor %}
+            </div>
+            <div class="row hlines">
+                <span>&nbsp;</span>
+                {% for tl in RenderSprint.Timeline %}
+                    <span class="{{tl.Locked ? "locked" : ""}} {{tl.Today ? "current" : ""}}"></span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="body">
+            {% for i, row in RenderSprint.Rows %}
+                {% if row.EpicKey != RenderSprint.Rows[i-1].EpicKey %}
+                    <div class="row container-divisor">{{row.EpicName}}</div>
+                {% endif %}
+                <div class="row strip" data-key="{{row.TaskKey}}">
+                    <div>
+                        {% if row.MainAssignee.PublicImageUrl %}
+                        <div class="assignee">
+                            <img src="{{row.MainAssignee.PublicImageUrl}}" title="{{row.MainAssignee.DisplayName}} <{{row.MainAssignee.Email}}" />
+                        </div>
+                        {% endif %}
+                        <div class="descr">
+                            {{row.TaskKey}}: {{row.TaskName}}
+                            <small>
+                            {% for assig in row.Assignees %}
+                                {% if assig.PublicImageUrl %}
+                                    {{RowAssigneesShort[row.TaskKey][assig.Email]}}:{{RowAssigneesPerc[row.TaskKey][assig.Email]}}%
+                                    &nbsp;
+                                {% endif %}
+                            {% endfor %}
+                            </small>
+                            {{row.Status}}
+                        </div>
+                    </div>
+                    <a href="{{row.LinkPublicUrl}}" target="_blank"
+                        class="task custom" style="grid-column: {{row.TimelineStartIndex+2}}/{{row.TimelineEndIndex+3}}; --percent: {{row.PercentComplete ? row.PercentComplete : 0}}%;"
+                        title="{{row.StartDate}} ~ {{row.EndDate}} ({{row.DurationHours}}h/{{row.DurationDays}}d)">
+                        <span title="{{row.MainAssignee.DisplayName}} <{{row.MainAssignee.Email}}>">
+                            {{row.PercentComplete ? row.PercentComplete : 0}}<small>%</small>
+                        </span>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="footer">
+            <div class="row container-divisor alocacao" onclick="filterMember('')">Alocação</div>
+            {% for memb in TeamMembers %}
+                <div class="row strip">
+                    <div>
+                        <div class="img" onclick="filterMember('{{TeamMembersKeysJoin[memb.TeamMember.Email]}}')">
+                            <img src="{{memb.TeamMember.PublicImageUrl ? memb.TeamMember.PublicImageUrl : "../../../profile-unknow.png"}}" />
+                        </div>
+                        {{memb.TeamMember.DisplayName ? memb.TeamMember.DisplayName : "NÃO ALOCADO"}}
+                        <span class="total {{(TeamMembersTotal[memb.TeamMember.Email] > ((TimelineLenValid - 1) * 80)) ? 'danger' : ((TeamMembersTotal[memb.TeamMember.Email] >= ((TimelineLenValid - 1) * 60)) ? 'warning' : 'success')}}">{{TeamMembersTotal[memb.TeamMember.Email]}}</span>
+                    </div>
+                    {% for tl in RenderSprint.Timeline %}
+                        {% for k, perc in memb.TimelinePerc %}
+                            {% if k == tl.Key %}
+                                <div class="{{(perc > 150) ? 'danger' : ((perc > 100) ? 'warning' : 'success')}}">
+                                    {{(perc > 0) ? perc : ''}}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function filterMember(taskKeys) {
+        if (taskKeys == "") {
+            for (node of document.querySelectorAll(".row[data-key]")) {
+                node.classList.remove("hidden");
+            }
+        } else {
+            var tasks = taskKeys.split(",");
+            for (node of document.querySelectorAll(".row[data-key]")) {
+                node.classList.add("hidden");
+            }
+            for (node of document.querySelectorAll(".row[data-key]")) {
+                for (k of tasks) {
+                    if (node.getAttribute('data-key') == k) {
+                        node.classList.remove("hidden");
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    body,
+    html {
+        font-family: "Roboto", sans-serif;
+        background-color: #cddade;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .wrapper {
+        width: 100%;
+        {# min-width: 1600px; #}
+        width: fit-content;
+        margin: 0 auto;
+        font-family: "Roboto", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .wrapper .header {
+        text-align: center;
+    }
+
+    .gantt {
+        background-color: #FFF;
+        border: 1px solid black;
+        border-radius: 5px;
+        height: max-content;
+        display: grid;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        box-shadow: 0 75px 125px -57px #7e8f94;
+        position: relative;
+        overflow: hidden;
+        overflow-x: auto;
+        font-family: "Roboto", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 14px;
+        max-width: fit-content;
+        {# margin: auto; #}
+    }
+
+    .gantt .row {
+        display: grid;
+        /* grid-template-columns: 1fr repeat(var(--grid-columns), 55px); */
+        grid-template-columns: 600px repeat(var(--grid-columns), 55px);
+        padding: 0;
+        margin: 0;
+        position: relative;
+        height: max-content;
+    }
+
+    .gantt .row.strip {
+        background-color: RGBA(255, 255, 255, 0.1);
+    }
+
+    .gantt .row.strip:nth-child(odd) {
+        background-color: rgb(69 125 147 / 15%);
+    }
+
+    .gantt .row>div {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .gantt .row.container-divisor {
+        z-index: 1000;
+        background: rgb(22 93 120 / 80%);
+        ;
+        color: #fff;
+        display: block;
+        line-height: 20px;
+        height: max-content;
+        min-height: max-content;
+        padding: 5px;
+        font-size: 14px;
+    }
+    .gantt .row.container-divisor.alocacao {
+        cursor: pointer;
+    }
+
+    .gantt .header .locked {
+        background-color: rgb(0 0 0 / 20%);
+        background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255, 255, 255, .1) 5px, rgba(255, 255, 255, .1) 12px);
+    }
+
+    .gantt .header .current {
+        background-color: rgb(76 175 80 / 25%);
+    }
+
+    .gantt .header .row.htimeline {
+        background-color: #0a3444 !important;
+        text-align: center;
+        font-size: 14px;
+        color: #FFF;
+        z-index: 5000;
+    }
+
+    .gantt .header .row.htimeline .col {
+        height: 40px;
+        padding-top: 5px;
+    }
+
+    .gantt .header .row.hlines {
+        position: absolute;
+        height: 100%;
+        background-color: transparent;
+    }
+
+    .gantt .header .row.hlines span {
+        display: block;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .gantt .body .row>div:first-child {
+        padding: 5px;
+    }
+    .gantt .body .row>div:first-child .assignee {
+        height: 30px;
+        float: left;
+        margin-right: 8px;
+    }
+    .gantt .body .row>div:first-child .assignee img {
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .gantt .body .row .task {
+        border: 1px solid black;
+        margin: auto 3px;
+        padding: 2px 4px;
+        position: relative;
+        text-decoration: none;
+        color: #000;
+        border-radius: 7px;
+        height: 20px;
+
+        background: #ededed;
+        background: #FFF linear-gradient(to right, rgb(25 179 22 / 40%) var(--percent, 0%), #ededed 0%);
+    }
+
+    .gantt .body .row .task .img {
+        height: 25px;
+    }
+
+    .gantt .body .row .task .img img {
+        border-radius: 50%;
+        height: 100%;
+    }
+
+    .gantt .body .row .task span {
+        position: relative;
+        text-align: center;
+        width: 35px;
+        display: inline-block;
+        line-height: 20px;
+    }
+
+    .gantt .footer .row div {
+        height: 35px;
+        line-height: 35px;
+    }
+
+    .gantt .footer .row div:first-child {
+        margin-left: 5px;
+    }
+    .gantt .footer .row div:first-child .img {
+        height: 25px;
+        margin: 5px;
+        float: left;
+        cursor: pointer;
+    }
+    .gantt .footer .row div:first-child .img img {
+        border-radius: 50%;
+        height: 100%;
+    }
+    .gantt .footer .row div:first-child .total {
+        float: right;
+        margin-right: 10px;
+    }
+
+    .gantt .footer .row div:not(:first-child) {
+        text-align: center;
+    }
+
+    .gantt .footer .row div:first-child .total {
+        color: #666;
+    }
+
+    .gantt .footer .row div:first-child .total.success,
+    .gantt .footer .row div.success {
+        color: green;
+        color: gray;
+        font-weight: normal;
+    }
+
+    .gantt .footer .row div:first-child .total.warning,
+    .gantt .footer .row div.warning {
+        color: orangered;
+        font-weight: bolder;
+    }
+
+    .gantt .footer .row div:first-child .total.danger,
+    .gantt .footer .row div.danger {
+        color: red;
+        font-weight: bolder;
+    }
+
+    .gantt .body .row.strip {
+        min-height: 40px;
+    }
+
+    .gantt .body .row.strip .descr {
+        padding: inherit;
+    }
+
+    .gantt .body .row .team {
+        margin-top: 5px;
+    }
+
+    .gantt .body .row .team .person {
+        display: inline-block;
+        /* background: rebeccapurple; */
+        height: 25px;
+        /* margin-right: 5px; */
+        margin: 2px 0;
+        /* width: 32%; */
+        width: 100px;
+    }
+
+    .gantt .body .row .team .person .img {
+        /* height: 30px; */
+        float: left;
+        height: 100%;
+    }
+
+    .gantt .body .row .team .person img {
+        border-radius: 50%;
+        height: 100%;
+    }
+
+    .gantt .body .row .team .person .descr {
+        float: left;
+        margin-left: 5px;
+    }
+
+    .gantt .body .row .team .person h1 {
+        font-size: 12px;
+        margin: 0;
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .gantt .body .row .team .person span {
+        font-size: 10px;
+        display: block;
+    }
+</style>

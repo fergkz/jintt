@@ -1,0 +1,10 @@
+# rename to config.yml
+jira:
+  username: "xxx@xxxxx.com.br"
+  accessToken: "xxxxxxxxxxxxxxx"
+  hostname: "https://xxxxxxxx.atlassian.net"
+  customFieldStartEstimateDate: customfield_999999
+  cacheExpiresSeconds: 600
+server:
+  port: 80
+  method: http

@@ -1,0 +1,6 @@
+tmp/*
+config.yml
+.htaccess
+cache/*
+trash/*
+debug-*
