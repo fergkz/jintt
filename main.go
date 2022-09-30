@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/fcgi"
+	"time"
 
 	DomainService "github.com/fergkz/jintt/src/Domain/Service"
 	InfrastructureController "github.com/fergkz/jintt/src/Infrastructure/Controller"
@@ -34,7 +35,8 @@ func main() {
 		Server struct {
 			Port string
 		}
-		Team []struct {
+		Dayoffs []string
+		Team    []struct {
 			Email       string
 			DisplayName string
 			Office      string
@@ -52,12 +54,18 @@ func main() {
 			PercentContribuition: 0,
 		}
 	}
+	dayoffs := []time.Time{}
+	for _, d := range config.Dayoffs {
+		p, _ := time.Parse("2006-01-02", d)
+		dayoffs = append(dayoffs, p)
+	}
 
 	router := mux.NewRouter()
 	controller := InfrastructureController.NewGanttSprintController(
 		InfrastructureService.NewJiraTaskService(config.Jira.Username, config.Jira.AccessToken, config.Jira.Hostname, config.Jira.CustomFieldStartEstimateDate, config.Jira.CacheExpiresSeconds),
 		InfrastructureService.NewRenderHtmlService("template.twig"),
 		replaceMembers,
+		dayoffs,
 	)
 	router.HandleFunc("/sprint/{SprintId:[0-9]+}", controller.Get).Methods("GET")
 	router.Handle("/profile-unknow.png", http.FileServer(http.Dir("./public")))

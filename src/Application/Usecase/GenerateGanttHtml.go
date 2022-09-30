@@ -13,17 +13,20 @@ type generateGanttHtml struct {
 	TasksRequestService DomainService.TasksRequestService
 	RenderHtmlService   DomainService.RenderHtmlService
 	ReplaceTeamMembers  map[string]DomainService.RenderHtmlServiceTeamMember
+	Dayoffs             []time.Time
 }
 
 func NewGenerateGanttHtml(
 	TasksRequestService DomainService.TasksRequestService,
 	RenderHtmlService DomainService.RenderHtmlService,
 	ReplaceTeamMembers map[string]DomainService.RenderHtmlServiceTeamMember,
+	Dayoffs []time.Time,
 ) *generateGanttHtml {
 	usecase := new(generateGanttHtml)
 	usecase.TasksRequestService = TasksRequestService
 	usecase.RenderHtmlService = RenderHtmlService
 	usecase.ReplaceTeamMembers = ReplaceTeamMembers
+	usecase.Dayoffs = Dayoffs
 	return usecase
 }
 
@@ -267,6 +270,15 @@ func (usecase *generateGanttHtml) isValidDate(dt time.Time) bool {
 
 	if dt.Weekday().String() == "Saturday" {
 		return false
+	}
+
+	for _, dof := range usecase.Dayoffs {
+		ds, _ := time.Parse("2006-01-02", dof.Format("2006-01-02"))
+		de, _ := time.Parse("2006-01-02", dof.Format("2006-01-02"))
+		de = de.AddDate(0, 0, 1).Add(time.Second * -1)
+		if usecase.inTimeSpan(dt, ds, de) {
+			return false
+		}
 	}
 
 	return true

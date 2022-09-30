@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	ApplicationUsecase "github.com/fergkz/jintt/src/Application/Usecase"
 	DomainEntity "github.com/fergkz/jintt/src/Domain/Entity"
@@ -15,17 +16,20 @@ type GanttSprintController struct {
 	TasksRequestService DomainService.TasksRequestService
 	RenderHtmlService   DomainService.RenderHtmlService
 	ReplaceTeamMembers  map[string]DomainService.RenderHtmlServiceTeamMember
+	Dayoffs             []time.Time
 }
 
 func NewGanttSprintController(
 	TasksRequestService DomainService.TasksRequestService,
 	RenderHtmlService DomainService.RenderHtmlService,
 	ReplaceTeamMembers map[string]DomainService.RenderHtmlServiceTeamMember,
+	Dayoffs []time.Time,
 ) *GanttSprintController {
 	controller := new(GanttSprintController)
 	controller.TasksRequestService = TasksRequestService
 	controller.RenderHtmlService = RenderHtmlService
 	controller.ReplaceTeamMembers = ReplaceTeamMembers
+	controller.Dayoffs = Dayoffs
 	return controller
 }
 
@@ -42,6 +46,7 @@ func (controller *GanttSprintController) Get(w http.ResponseWriter, r *http.Requ
 		controller.TasksRequestService,
 		controller.RenderHtmlService,
 		controller.ReplaceTeamMembers,
+		controller.Dayoffs,
 	)
 	html := usecase.Run([]DomainEntity.ProjectSprintId{DomainEntity.ProjectSprintId(sprintIdInt)})
 

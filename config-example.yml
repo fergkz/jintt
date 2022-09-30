@@ -8,3 +8,5 @@ jira:
 server:
   port: 80
   method: http
+dayoffs:
+  - "2022-10-12"
