@@ -190,7 +190,7 @@ func (usecase *generateGanttHtml) Run(sprintIds []DomainEntity.ProjectSprintId) 
 	}
 	for _, tl := range RenderSprint.Timeline {
 		for _, row := range allRows {
-			if usecase.inTimeSpan(tl.Date, row.StartDate, row.EndDate) {
+			if usecase.inTimeSpan(tl.Date, row.StartDate, row.EndDate) && usecase.isValidDate(tl.Date) {
 				for _, assig := range row.Assignees {
 					RenderSprint.TeamMembers[assig.Email].TimelinePerc[tl.Key] += math.Round(assig.PercentContribuition)
 				}
