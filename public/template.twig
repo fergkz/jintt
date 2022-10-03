@@ -263,7 +263,22 @@
         height: 20px;
 
         background: #ededed;
+    }
+    .gantt .body .row.danger .task {
+        background: #FFF linear-gradient(to right, rgb(255 0 0 / 60%) var(--percent, 0%), #ededed 0%);
+        border-color:  rgb(255 0 0);
+    }
+    .gantt .body .row.warning .task {
+        background: #FFF linear-gradient(to right, rgb(255 129 0 / 40%) var(--percent, 0%), #ededed 0%);
+        border-color:  rgb(255 129 0);
+    }
+    .gantt .body .row.success .task {
         background: #FFF linear-gradient(to right, rgb(25 179 22 / 40%) var(--percent, 0%), #ededed 0%);
+        border-color:  rgb(25 179 22);
+    }
+    .gantt .body .row.normal .task {
+        background: #FFF linear-gradient(to right, rgb(0 105 155 / 40%) var(--percent, 0%), #ededed 0%);
+        border-color:  rgb(0 105 155);
     }
 
     .gantt .body .row .task .img {
