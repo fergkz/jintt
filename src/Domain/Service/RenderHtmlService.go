@@ -5,6 +5,7 @@ import "time"
 type RenderHtmlServiceRow struct {
 	TaskKey            string
 	TaskName           string
+	TaskDone           bool
 	EpicKey            string
 	EpicName           string
 	StartDate          time.Time
@@ -14,6 +15,7 @@ type RenderHtmlServiceRow struct {
 	DurationDays       int
 	PercentComplete    float64
 	Status             string
+	StatusMapped       string // danger, warning, success, normal
 	LinkPublicUrl      string
 	MainAssignee       *RenderHtmlServiceTeamMember
 	DependencyKeys     []string

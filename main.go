@@ -7,6 +7,7 @@ import (
 	"net/http/fcgi"
 	"time"
 
+	DomainEntity "github.com/fergkz/jintt/src/Domain/Entity"
 	DomainService "github.com/fergkz/jintt/src/Domain/Service"
 	InfrastructureController "github.com/fergkz/jintt/src/Infrastructure/Controller"
 	InfrastructureService "github.com/fergkz/jintt/src/Infrastructure/Service"
@@ -31,6 +32,7 @@ func main() {
 			Hostname                     string
 			CustomFieldStartEstimateDate string
 			CacheExpiresSeconds          int
+			Status                       DomainEntity.ProjectTaskStatusMapping
 		}
 		Server struct {
 			Port string
@@ -66,6 +68,7 @@ func main() {
 		InfrastructureService.NewRenderHtmlService("template.twig"),
 		replaceMembers,
 		dayoffs,
+		config.Jira.Status,
 	)
 	router.HandleFunc("/sprint/{SprintId:[0-9]+}", controller.Get).Methods("GET")
 	router.Handle("/profile-unknow.png", http.FileServer(http.Dir("./public")))

@@ -42,6 +42,12 @@ type ProjectSubTask struct {
 	Assignee ProjectUser
 }
 
+type ProjectTaskStatusMapping struct {
+	Executing []string
+	Stopped   []string
+	Done      []string
+}
+
 type ProjectTask struct {
 	Key               string
 	PercentComplete   float64

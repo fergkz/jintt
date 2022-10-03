@@ -26,7 +26,7 @@
                 {% if row.EpicKey != RenderSprint.Rows[i-1].EpicKey %}
                     <div class="row container-divisor">{{row.EpicName}}</div>
                 {% endif %}
-                <div class="row strip" data-key="{{row.TaskKey}}">
+                <div class="row strip {{row.StatusMapped}}" data-key="{{row.TaskKey}}">
                     <div>
                         {% if row.MainAssignee.PublicImageUrl %}
                         <div class="assignee">
@@ -147,12 +147,11 @@
         -moz-osx-font-smoothing: grayscale;
         font-size: 14px;
         max-width: fit-content;
-        {# margin: auto; #}
+        --task-success: #FFF linear-gradient(to right, rgb(25 179 22 / 40%) var(--percent, 0%), #ededed 0%);
     }
 
     .gantt .row {
         display: grid;
-        /* grid-template-columns: 1fr repeat(var(--grid-columns), 55px); */
         grid-template-columns: 600px repeat(var(--grid-columns), 55px);
         padding: 0;
         margin: 0;
@@ -176,7 +175,6 @@
     .gantt .row.container-divisor {
         z-index: 1000;
         background: rgb(22 93 120 / 80%);
-        ;
         color: #fff;
         display: block;
         line-height: 20px;
@@ -240,6 +238,18 @@
         font-size: 10px;
         padding-top: 5px;
         font-weight: bolder;
+    }
+    .gantt .body .row.danger>div:first-child .status {
+        color: red;
+    }
+    .gantt .body .row.warning>div:first-child .status {
+        color: #ff5e00;
+    }
+    .gantt .body .row.success>div:first-child .status {
+        color: green;
+    }
+    .gantt .body .row.normal>div:first-child .status {
+        color: rgb(0 105 155);
     }
 
     .gantt .body .row .task {
