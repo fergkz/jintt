@@ -3,6 +3,7 @@ package ApplicationUsecase
 import (
 	"math"
 	"sort"
+	"strings"
 	"time"
 
 	DomainEntity "github.com/fergkz/jintt/src/Domain/Entity"
@@ -14,6 +15,7 @@ type generateGanttHtml struct {
 	RenderHtmlService   DomainService.RenderHtmlService
 	ReplaceTeamMembers  map[string]DomainService.RenderHtmlServiceTeamMember
 	Dayoffs             []time.Time
+	StatusMapping       DomainEntity.ProjectTaskStatusMapping
 }
 
 func NewGenerateGanttHtml(
@@ -21,12 +23,14 @@ func NewGenerateGanttHtml(
 	RenderHtmlService DomainService.RenderHtmlService,
 	ReplaceTeamMembers map[string]DomainService.RenderHtmlServiceTeamMember,
 	Dayoffs []time.Time,
+	StatusMapping DomainEntity.ProjectTaskStatusMapping,
 ) *generateGanttHtml {
 	usecase := new(generateGanttHtml)
 	usecase.TasksRequestService = TasksRequestService
 	usecase.RenderHtmlService = RenderHtmlService
 	usecase.ReplaceTeamMembers = ReplaceTeamMembers
 	usecase.Dayoffs = Dayoffs
+	usecase.StatusMapping = StatusMapping
 	return usecase
 }
 
@@ -55,6 +59,7 @@ func (usecase *generateGanttHtml) Run(sprintIds []DomainEntity.ProjectSprintId) 
 		row.EpicKey = task.Epic.Key
 		row.EpicName = task.Epic.Summary
 		row.CreateDate = task.CreatedAt
+		row.TaskDone = task.Done
 
 		if task.StartEstimate.IsZero() {
 			row.StartDate = usecase.fixValidDate(RenderSprint.DateStart)
@@ -198,6 +203,47 @@ func (usecase *generateGanttHtml) Run(sprintIds []DomainEntity.ProjectSprintId) 
 		}
 	}
 	/* END: DEFINE TEAM ALOCATION */
+
+	/* DEFINE STATUS MAPPED */
+	for _, row := range RenderSprint.Rows {
+		row.StatusMapped = "warning"
+
+		if usecase.strInSlice(strings.ToUpper(row.Status), usecase.StatusMapping.Done) {
+			if row.PercentComplete < 100 {
+				row.StatusMapped = "warning"
+				continue
+			}
+			row.StatusMapped = "success"
+			continue
+		} else {
+			if time.Now().After(row.EndDate) {
+				row.StatusMapped = "danger"
+				continue
+			}
+		}
+
+		if usecase.strInSlice(strings.ToUpper(row.Status), usecase.StatusMapping.Executing) {
+			if row.PercentComplete >= 100 {
+				row.StatusMapped = "warning"
+				continue
+			}
+			if time.Now().After(row.EndDate) {
+				row.StatusMapped = "danger"
+				continue
+			}
+			if time.Now().Before(row.StartDate) {
+				row.StatusMapped = "success"
+				continue
+			}
+			row.StatusMapped = "normal"
+			continue
+		}
+		if usecase.strInSlice(strings.ToUpper(row.Status), usecase.StatusMapping.Stopped) {
+			row.StatusMapped = "warning"
+			continue
+		}
+	}
+	/* END: DEFINE STATUS MAPPED */
 
 	for i, row := range RenderSprint.Rows {
 		RenderSprint.Rows[i] = row
