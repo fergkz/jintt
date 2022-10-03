@@ -43,7 +43,7 @@
                                 {% endif %}
                             {% endfor %}
                             </small>
-                            {{row.Status}}
+                            <span class="status">{{row.Status}}</span>
                         </div>
                     </div>
                     <a href="{{row.LinkPublicUrl}}" target="_blank"
@@ -233,6 +233,13 @@
     .gantt .body .row>div:first-child .assignee img {
         height: 100%;
         border-radius: 50%;
+    }
+    .gantt .body .row>div:first-child .status {
+        float: right;
+        text-transform: uppercase;
+        font-size: 10px;
+        padding-top: 5px;
+        font-weight: bolder;
     }
 
     .gantt .body .row .task {
