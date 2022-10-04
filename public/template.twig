@@ -57,7 +57,7 @@
             {% endfor %}
         </div>
         <div class="footer">
-            <div class="row container-divisor alocacao" onclick="filterMember('')">Alocação</div>
+            <div class="row container-divisor alocacao">Alocação <span class="hidden" onclick="filterMember('')">Limpar Filtros</span></div>
             {% for memb in TeamMembers %}
                 <div class="row strip">
                     <div>
@@ -85,9 +85,13 @@
 
 <script>
     function filterMember(taskKeys) {
+        var spansCleanFilters = document.querySelectorAll(".alocacao > span")
         if (taskKeys == "") {
             for (node of document.querySelectorAll(".row[data-key]")) {
                 node.classList.remove("hidden");
+            }
+            for (node of spansCleanFilters) {
+                node.classList.add("hidden");
             }
         } else {
             var tasks = taskKeys.split(",");
@@ -100,6 +104,9 @@
                         node.classList.remove("hidden");
                     }
                 }
+            }
+            for (node of spansCleanFilters) {
+                node.classList.remove("hidden");
             }
         }
     }
@@ -183,8 +190,19 @@
         padding: 5px;
         font-size: 14px;
     }
-    .gantt .row.container-divisor.alocacao {
+    
+    .gantt .row.container-divisor.alocacao span {
         cursor: pointer;
+        background: #e3ecef;
+        color: #457d93;
+        border-radius: 7px;
+        padding: 4px 7px;
+        margin-left: 5px;
+        font-size: 11px;
+        font-weight: bolder;
+    }
+    .gantt .row.container-divisor.alocacao span:hover {
+        background: #d0dadd;
     }
 
     .gantt .header .locked {
