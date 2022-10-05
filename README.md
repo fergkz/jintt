@@ -3,8 +3,8 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/fergkz/jintt?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/fergkz/jintt?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/fergkz/jintt?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/fergkz/jintt?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/fergkz/jintt?style=for-the-badge)
+![GitHub open issues](https://img.shields.io/github/issues/fergkz/jintt?style=for-the-badge)
+![GitHub open pull requests](https://img.shields.io/github/issues-pr/fergkz/jintt?style=for-the-badge)
 
 
 > Extraia um relatório das atividades e alocações da sua sprint no jira
