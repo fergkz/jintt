@@ -30,7 +30,7 @@
                     <div>
                         {% if row.MainAssignee.PublicImageUrl %}
                         <div class="assignee">
-                            <img src="{{row.MainAssignee.PublicImageUrl}}" title="{{row.MainAssignee.DisplayName}} <{{row.MainAssignee.Email}}" />
+                            <img onclick="filterMember('{{TeamMembersKeysJoin[row.MainAssignee.Email]}}')" src="{{row.MainAssignee.PublicImageUrl}}" title="{{row.MainAssignee.DisplayName}} <{{row.MainAssignee.Email}}" />
                         </div>
                         {% endif %}
                         <div class="descr">
@@ -249,6 +249,7 @@
     .gantt .body .row>div:first-child .assignee img {
         height: 100%;
         border-radius: 50%;
+        cursor: pointer;
     }
     .gantt .body .row>div:first-child .status {
         float: right;
