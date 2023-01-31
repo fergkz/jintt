@@ -5,10 +5,13 @@ jira:
   hostname: "https://xxxxxxxx.atlassian.net"
   customFieldStartEstimateDate: customfield_999999
   cacheExpiresSeconds: 600
+  workingHourPerDay: 6.5
   status:
     executing:
       - IN PROGRESS
+      - OPENED
     stopped:
+      - HOLDED
       - BLOCKED
       - READY FOR CODE REVIEW
     done:

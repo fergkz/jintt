@@ -18,6 +18,7 @@ type GanttSprintController struct {
 	ReplaceTeamMembers  map[string]DomainService.RenderHtmlServiceTeamMember
 	Dayoffs             []time.Time
 	StatusMapping       DomainEntity.ProjectTaskStatusMapping
+	WorkingHourPerDay   float64
 }
 
 func NewGanttSprintController(
@@ -26,6 +27,7 @@ func NewGanttSprintController(
 	ReplaceTeamMembers map[string]DomainService.RenderHtmlServiceTeamMember,
 	Dayoffs []time.Time,
 	StatusMapping DomainEntity.ProjectTaskStatusMapping,
+	WorkingHourPerDay float64,
 ) *GanttSprintController {
 	controller := new(GanttSprintController)
 	controller.TasksRequestService = TasksRequestService
@@ -33,6 +35,7 @@ func NewGanttSprintController(
 	controller.ReplaceTeamMembers = ReplaceTeamMembers
 	controller.Dayoffs = Dayoffs
 	controller.StatusMapping = StatusMapping
+	controller.WorkingHourPerDay = WorkingHourPerDay
 	return controller
 }
 
@@ -51,6 +54,7 @@ func (controller *GanttSprintController) Get(w http.ResponseWriter, r *http.Requ
 		controller.ReplaceTeamMembers,
 		controller.Dayoffs,
 		controller.StatusMapping,
+		controller.WorkingHourPerDay,
 	)
 	html := usecase.Run([]DomainEntity.ProjectSprintId{DomainEntity.ProjectSprintId(sprintIdInt)})
 

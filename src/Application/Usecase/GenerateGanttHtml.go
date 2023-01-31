@@ -16,6 +16,7 @@ type generateGanttHtml struct {
 	ReplaceTeamMembers  map[string]DomainService.RenderHtmlServiceTeamMember
 	Dayoffs             []time.Time
 	StatusMapping       DomainEntity.ProjectTaskStatusMapping
+	WorkingHourPerDay   float64
 }
 
 func NewGenerateGanttHtml(
@@ -24,6 +25,7 @@ func NewGenerateGanttHtml(
 	ReplaceTeamMembers map[string]DomainService.RenderHtmlServiceTeamMember,
 	Dayoffs []time.Time,
 	StatusMapping DomainEntity.ProjectTaskStatusMapping,
+	WorkingHourPerDay float64,
 ) *generateGanttHtml {
 	usecase := new(generateGanttHtml)
 	usecase.TasksRequestService = TasksRequestService
@@ -31,6 +33,7 @@ func NewGenerateGanttHtml(
 	usecase.ReplaceTeamMembers = ReplaceTeamMembers
 	usecase.Dayoffs = Dayoffs
 	usecase.StatusMapping = StatusMapping
+	usecase.WorkingHourPerDay = WorkingHourPerDay
 	return usecase
 }
 
@@ -70,7 +73,7 @@ func (usecase *generateGanttHtml) Run(sprintIds []DomainEntity.ProjectSprintId) 
 			row.StartDate = usecase.fixValidDate(task.StartEstimate)
 		}
 		row.DurationHours = task.TimeEstimateHours
-		row.DurationDays = int(math.Ceil(float64(task.TimeEstimateHours) / float64(9)))
+		row.DurationDays = int(math.Ceil(float64(task.TimeEstimateHours) / float64(usecase.WorkingHourPerDay)))
 		row.EndDate = row.StartDate.AddDate(0, 0, 1).Add(time.Second * -1)
 		row.EndDate = usecase.sumDays(row.EndDate, row.DurationDays-1)
 

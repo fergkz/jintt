@@ -31,6 +31,7 @@ func main() {
 			AccessToken                  string
 			Hostname                     string
 			CustomFieldStartEstimateDate string
+			WorkingHourPerDay            float64
 			CacheExpiresSeconds          int
 			Status                       DomainEntity.ProjectTaskStatusMapping
 		}
@@ -69,6 +70,7 @@ func main() {
 		replaceMembers,
 		dayoffs,
 		config.Jira.Status,
+		config.Jira.WorkingHourPerDay,
 	)
 	router.HandleFunc("/sprint/{SprintId:[0-9]+}", controller.Get).Methods("GET")
 	router.Handle("/profile-unknow.png", http.FileServer(http.Dir("./public")))

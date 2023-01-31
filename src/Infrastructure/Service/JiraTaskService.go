@@ -2,7 +2,6 @@ package InfrastructureService
 
 import (
 	"encoding/json"
-	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -289,10 +288,10 @@ func (service jiraTaskService) parseToTasks(rows []interface{}, sprints []Domain
 		Task.UpdatedAt = Task.UpdatedAt.AddDate(0, 0, 1).Add(time.Second * -1)
 
 		if dto.FieldsStruct.TimeOriginalEstimate > 0 {
-			Task.TimeEstimateHours = int(math.Ceil(float64(dto.FieldsStruct.TimeOriginalEstimate) / 60 / 60))
+			Task.TimeEstimateHours = int(float64(dto.FieldsStruct.TimeOriginalEstimate) / 60 / 60)
 		}
 		if dto.FieldsStruct.TimeSpent > 0 {
-			Task.TimeSpentHours = int(math.Ceil(float64(dto.FieldsStruct.TimeSpent) / 60 / 60))
+			Task.TimeSpentHours = int(float64(dto.FieldsStruct.TimeSpent) / 60 / 60)
 		}
 
 		Task.Assignee = DomainEntity.ProjectUser{
