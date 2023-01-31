@@ -94,15 +94,18 @@ func (service jiraTaskService) GetSprints(SprintIds []DomainEntity.ProjectSprint
 
 		if response.StartDate != nil {
 			sprint.StartDate, _ = time.Parse("2006-01-02T15:04:05.000Z", response.StartDate.(string))
+			sprint.StartDate = sprint.StartDate.Add(-3 * time.Hour) // Compatibilizar com horário Jira
 			sprint.StartDate, _ = time.Parse("2006-01-02", sprint.StartDate.Format("2006-01-02"))
 		}
 		if response.EndDate != nil {
 			sprint.EndDate, _ = time.Parse("2006-01-02T15:04:05.000Z", response.EndDate.(string))
+			sprint.EndDate = sprint.EndDate.Add(-3 * time.Hour) // Compatibilizar com horário Jira
 			sprint.EndDate, _ = time.Parse("2006-01-02", sprint.EndDate.Format("2006-01-02"))
 			sprint.EndDate = sprint.EndDate.AddDate(0, 0, 1).Add(time.Second * -1)
 		}
 		if response.CompleteDate != nil {
 			sprint.CompleteDate, _ = time.Parse("2006-01-02T15:04:05.000Z", response.CompleteDate.(string))
+			sprint.CompleteDate = sprint.CompleteDate.Add(-3 * time.Hour) // Compatibilizar com horário Jira
 			sprint.CompleteDate, _ = time.Parse("2006-01-02", sprint.CompleteDate.Format("2006-01-02"))
 			sprint.CompleteDate = sprint.CompleteDate.AddDate(0, 0, 1).Add(time.Second * -1)
 		}
@@ -277,9 +280,11 @@ func (service jiraTaskService) parseToTasks(rows []interface{}, sprints []Domain
 		Task.TimeEstimateHours = dto.FieldsStruct.TimeOriginalEstimate
 
 		Task.CreatedAt, _ = time.Parse("2006-01-02T15:04:05.000-0700", dto.FieldsStruct.Created.(string))
+		Task.CreatedAt = Task.CreatedAt.Add(-3 * time.Hour) // Compatibilizar com horário Jira
 		Task.CreatedAt, _ = time.Parse("2006-01-02", Task.CreatedAt.Format("2006-01-02"))
 
 		Task.UpdatedAt, _ = time.Parse("2006-01-02T15:04:05.000-0700", dto.FieldsStruct.Updated.(string))
+		Task.UpdatedAt = Task.UpdatedAt.Add(-3 * time.Hour) // Compatibilizar com horário Jira
 		Task.UpdatedAt, _ = time.Parse("2006-01-02", Task.UpdatedAt.Format("2006-01-02"))
 		Task.UpdatedAt = Task.UpdatedAt.AddDate(0, 0, 1).Add(time.Second * -1)
 
