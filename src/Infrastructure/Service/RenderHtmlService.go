@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	DomainService "github.com/fergkz/jintt/src/Domain/Service"
 	"github.com/tyler-sommer/stick"
@@ -107,6 +108,8 @@ func (service renderHtmlService) Parse(RenderSprint DomainService.RenderHtmlServ
 	nParams["TeamMembers"] = TeamMembers
 	nParams["TeamMembersKeysJoin"] = TeamMembersKeysJoin
 	nParams["TeamMembersTotal"] = TeamMembersTotal
+
+	nParams["UpdatedAtFormatted"] = time.Now().Format("02/01/2006 15:04")
 
 	var b bytes.Buffer
 	err := render.Execute(filename, &b, nParams)

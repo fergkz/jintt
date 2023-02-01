@@ -80,6 +80,9 @@
             {% endfor %}
         </div>
     </div>
+    <div class="footer-rights">
+        <small class="updated-at">Atualizado em {{UpdatedAtFormatted}}</small>
+    </div>
 </div>
 
 
@@ -134,6 +137,13 @@
     }
     .wrapper .header {
         text-align: center;
+    }
+
+    .wrapper .footer-rights .updated-at {
+        text-align: right;
+        float: right;
+        font-size: 16px;
+        padding-top: 4px;
     }
 
     .gantt {
