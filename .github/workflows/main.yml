@@ -24,15 +24,15 @@ jobs:
           go build -tags server -o bin-linux-server.fcgi .
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
-        with:
-          server: ${{ secrets.ftp_server }}
-          username: ${{ secrets.ftp_username }}
-          password: ${{ secrets.ftp_password }}
-          server-dir: ${{ secrets.ftp_remote_dir }}
-          local-dir: ./
-          exclude: |
-            **/*
-            !**/bin-linux-server.*
-            !**/.htaccess
-            !**/public/**/*
+        run: |
+          rsync -ar \
+          --include='bin-linux-server.fcgi' \
+          --include='public/***' \
+          --exclude='*' \
+          -e 'sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -l ${{ secrets.SSH_USERNAME }}' \
+          ./ ${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+
+      - name: 📂 Chmod files
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+          'cd ${{ secrets.SSH_PATH }}; chmod 0744 bin-linux-server.fcgi'
