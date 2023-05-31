@@ -345,7 +345,7 @@ func (service jiraTaskService) parseToTasks(rows []interface{}, sprints []Domain
 		}
 
 		for _, iLink := range dto.FieldsStruct.Issuelinks {
-			if iLink.OutwardIssue.Key != "" && (iLink.Type.Outward == "is blocked by" || iLink.Type.Outward == "depends on") {
+			if iLink.OutwardIssue.Key != "" {
 				Task.DependenciesKeys = append(Task.DependenciesKeys, iLink.OutwardIssue.Key)
 			}
 		}
